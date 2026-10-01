@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demográfiai Kérdőív & Nagyképes IAT Teszt</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 850px;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3 {
+            color: #0f172a;
+            margin-top: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .radio-label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .range-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .range-slider {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .iat-instructions {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .iat-box {
+            text-align: center;
+        }
+
+        .iat-headers {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .iat-header-left {
+            text-align: left;
+            width: 45%;
+            color: #334155;
+        }
+
+        .iat-header-right {
+            text-align: right;
+            width: 45%;
+            color: #334155;
+        }
+
+        /* Nagyobb kép konténer */
+        .iat-stimulus-container {
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            position: relative;
+            background: #fafafa;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .iat-stimulus img {
+            width: 320px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+        }
+
+        .error-feedback {
+            color: var(--error-color);
+            font-size: 5rem;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .keys-hint {
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .results-table th, .results-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .results-table th {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 1. RÉSZ: DEMOGRÁFIAI KÉRDŐÍV -->
+    <div id="questionnaire-section">
+        <h1>Kérdőív</h1>
+        <p>Kérjük, válaszd ki a rád leginkább jellemző opciókat a teszt megkezdése előtt.</p>
+        
+        <form id="demographics-form">
+            <div class="form-group">
+                <label for="living-place">Hol élsz?</label>
+                <select id="living-place" required>
+                    <option value="" disabled selected>Válassz opciót...</option>
+                    <option value="Falu">Falu</option>
+                    <option value="Kisváros">Kisváros</option>
+                    <option value="Nagyváros">Nagyváros</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Hova sorolnád a családod anyagi helyzetét kb?</label>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="financial" value="Elit" required> Elit</label>
+                    <label class="radio-label"><input type="radio" name="financial" value="Felső-középosztály"> Felső-középosztály</label>
+                    <label class="radio-label"><input type="radio" name="financial" value="Középosztály"> Középosztály</label>
+                    <label class="radio-label"><input type="radio" name="financial" value="Alsó-középosztály"> Alsó-középosztály</label>
+                    <label class="radio-label"><input type="radio" name="financial" value="Hátrányosabb"> Hátrányosabb</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Szülök végzettsége:</label>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="education" value="Alapfok" required> Alapfok</label>
+                    <label class="radio-label"><input type="radio" name="education" value="Középfok"> Középfok</label>
+                    <label class="radio-label"><input type="radio" name="education" value="Felsőfok"> Felsőfok</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="religion">Vallásos vagy, ha igen, milyen?</label>
+                <input type="text" id="religion" placeholder="pl. Nem, Katolikus, Református, stb.">
+            </div>
+
+            <div class="form-group">
+                <label>Milyen gyakran olvasol híreket?</label>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="news_freq" value="Soha" required> Soha</label>
+                    <label class="radio-label"><input type="radio" name="news_freq" value="Néha"> Néha</label>
+                    <label class="radio-label"><input type="radio" name="news_freq" value="Gyakran"> Gyakran</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="prejudice-scale">Mennyire tartod magad előítéletesnek (1-10-es skála)?</label>
+                <div class="range-container">
+                    <input type="range" id="prejudice-scale" min="1" max="10" value="5" class="range-slider" oninput="document.getElementById('range-val').innerText = this.value">
+                    <div class="range-labels">
+                        <span>1 (Egyáltalán nem)</span>
+                        <span id="range-val" style="font-weight:bold; color:var(--primary);">5</span>
+                        <span>10 (Nagyon)</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Tovább az IAT tesztre</button>
+        </form>
+    </div>
+
+    <!-- 2. RÉSZ: IAT UTASÍTÁSOK -->
+    <div id="iat-instructions-section" class="hidden">
+        <h2 id="instruction-title">IAT Teszt - Útmutató</h2>
+        <div class="iat-instructions" id="instruction-text"></div>
+        <button id="start-block-btn">Kezdés</button>
+    </div>
+
+    <!-- 3. RÉSZ: IAT TESZT FUTTATÁS -->
+    <div id="iat-test-section" class="hidden">
+        <div class="iat-box">
+            <div class="iat-headers">
+                <div class="iat-header-left" id="header-left">Bal kategória</div>
+                <div class="iat-header-right" id="header-right">Jobb kategória</div>
+            </div>
+
+            <div class="iat-stimulus-container">
+                <div id="stimulus-display" class="iat-stimulus"></div>
+                <div id="error-display" class="hidden error-feedback">✕</div>
+            </div>
+
+            <div class="keys-hint">
+                <span>Nyomd meg az <strong>E</strong> gombot (Balra)</span>
+                <span>Nyomd meg az <strong>I</strong> gombot (Jobbra)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. RÉSZ: EREDMÉNYEK ÉS LETÖLTÉS -->
+    <div id="results-section" class="hidden">
+        <h1>Teszt eredmények</h1>
+        <p>Köszönjük, hogy kitöltötted a kérdőívet és elvégezted az IAT tesztet!</p>
+        
+        <h3>Blokkonkénti eredmények</h3>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Blokk</th>
+                    <th>Átlagos Reakcióidő (ms)</th>
+                    <th>Hibaszázalék (%)</th>
+                </tr>
+            </thead>
+            <tbody id="results-table-body"></tbody>
+        </table>
+
+        <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:20px;">
+            <h3>D-Score (Implicit Torzítás Mutató):</h3>
+            <p id="d-score-display" style="font-size: 1.2rem; font-weight: bold; color: var(--primary); margin: 0;"></p>
+        </div>
+
+        <button id="download-csv-btn">Excel / CSV letöltése</button>
+    </div>
+</div>
+
+<script>
+    let demographicsData = {};
+    let currentBlockIndex = 0;
+    let trialIndex = 0;
+    let trialList = [];
+    let startTime = 0;
+    let attemptsCount = 0;
+    let allTrialLogs = [];
+
+    // Képek listái (5-5 darab kategóriánként)
+    const stimuliData = {
+        virag: [
+            { type: 'virag', name: 'Virág 1', url: 'https://vassl.hu/modulok/w3keptar/kepek/Angol_keptar/Viragok/dalia_n.png' },
+            { type: 'virag', name: 'Virág 2', url: 'https://gyogyszernelkul.com/wp-content/uploads/2018/06/viragok-nyelve.jpg' },
+            { type: 'virag', name: 'Virág 3', url: 'https://ajandekszalon.myshoprenter.hu/custom/ajandekszalon/image/cache/w0h0q100np1/Kategoriakepek/viragok-kategoria.png' },
+            { type: 'virag', name: 'Virág 4', url: 'https://emmaviragkuldes.hu/wp-content/uploads/2023/02/Szalas-rozsaszin-rozsa.jpg' },
+            { type: 'virag', name: 'Virág 5', url: 'https://elle.hu/uploads/cover/3-tropusi-virag-elle_w1060_h727_ojpg.webp' }
+        ],
+        rovar: [
+            { type: 'rovar', name: 'Bogár 1', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyf6VYx79u-NHczACcTQ9RNiF2a7ZSRxthp0McT-S8JAPQrODQG3y1WcIK&s=10' },
+            { type: 'rovar', name: 'Bogár 2', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Schietmot_in_glas_onderaanzicht_A.jpg/330px-Schietmot_in_glas_onderaanzicht_A.jpg?utm_source=hu.wikipedia.org&utm_campaign=parser&utm_content=thumbnail' },
+            { type: 'rovar', name: 'Bogár 3', url: 'https://www.plantlady.hu/wp-content/uploads/2024/10/pexels-sonel-13969397-1-1024x683.jpg' },
+            { type: 'rovar', name: 'Bogár 4', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqXYEl5cmAepr2ZkcNWO384Klthu6OzGa6lEZdJ-3VtphWp7DcbPoPmZAY&s=10' },
+            { type: 'rovar', name: 'Bogár 5', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyf6VYx79u-NHczACcTQ9RNiF2a7ZSRxthp0McT-S8JAPQrODQG3y1WcIK&s=10' }
+        ],
+        europai: [
+            { type: 'europai', name: 'Európai 1', url: 'https://images.egeszsegkalauz.hu/1/TJmktlBaHR0cHM6Ly9vY2RuLmV1L3B1bHNjbXMvTURBXy9iNGZjM2RlZDc2NGJlOGQ0ODhjZjFjZjM2OWFjODIxNi5qcGeRkwXNAybNAmQ' },
+            { type: 'europai', name: 'Európai 2', url: 'https://wmn.hu/picture/97856/normal/239/00239602.jpeg' },
+            { type: 'europai', name: 'Európai 3', url: 'https://s.24.hu/app/uploads/2022/03/gettyimages-1124679080-e1647859059840.jpg' },
+            { type: 'europai', name: 'Európai 4', url: 'https://igenyesferfi.hu/wp-content/uploads/2023/02/boldogsag_mentalis_ero_lottootos_2023_resized_1200x.jpg' },
+            { type: 'europai', name: 'Európai 5', url: 'https://www.profession.hu/article-image/6853ca212cc014abf49923c6e0aee5c1/az-igazan-sikeres-emberek-titkai.jpg' }
+        ],
+        afrikai: [
+            { type: 'afrikai', name: 'Afrikai 1', url: 'https://upload.wikimedia.org/wikipedia/commons/d/d1/West_Africa_%282220943702%29.jpg?utm_source=hu.wikipedia.org&utm_campaign=index&utm_content=original' },
+            { type: 'afrikai', name: 'Afrikai 2', url: 'https://cdn.pixabay.com/photo/2017/02/16/23/10/smile-2072907_640.jpg' },
+            { type: 'afrikai', name: 'Afrikai 3', url: 'https://i0.hippopx.com/photos/302/280/47/african-woman-ethiopian-girl-afar-tribe-african-people-preview.jpg' },
+            { type: 'afrikai', name: 'Afrikai 4', url: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Pygm%C3%A9e_-_marque_de_chefferie.jpg?utm_source=hu.wikipedia.org&utm_campaign=index&utm_content=original' },
+            { type: 'afrikai', name: 'Afrikai 5', url: 'https://as2.ftcdn.net/v2/jpg/00/44/72/63/1000_F_44726392_V5aChUa8NmJbissdeHOU2MvTaVHesXlE.jpg' }
+        ]
+    };
+
+    // A 4 Blokk konfigurációja a pontos kéréseid szerint
+    const blocks = [
+        {
+            name: "1. Blokk: Virágok vs. Bogarak",
+            instruction: "<strong>1. Rész:</strong><br>Ha <b>Bogár</b> kép jelenik meg, nyomd meg a <b>Bal gombot (E)</b>.<br>Ha <b>Virág</b> kép jelenik meg, nyomd meg a <b>Jobb gombot (I)</b>.<br><br><i>Összesen 10 próba (5 bogár és 5 virág kép).</i>",
+            leftCat: "Bogár képek",
+            rightCat: "Virág képek",
+            mapping: { 'rovar': 'e', 'virag': 'i' },
+            // 5 bogár + 5 virág = 10 fix próba, véletlenszerű sorrendben
+            customGenerator: () => shuffleArray([...stimuliData.rovar, ...stimuliData.virag])
+        },
+        {
+            name: "2. Blokk: Európaiak vs. Afrikaiak",
+            instruction: "<strong>2. Rész:</strong><br>Ha <b>Afrikai</b> személy jelenik meg, nyomd meg a <b>Bal gombot (E)</b>.<br>Ha <b>Európai</b> személy jelenik meg, nyomd meg a <b>Jobb gombot (I)</b>.<br><br><i>Összesen 10 próba (5 afrikai és 5 európai kép).</i>",
+            leftCat: "Afrikai személyek",
+            rightCat: "Európai személyek",
+            mapping: { 'afrikai': 'e', 'europai': 'i' },
+            // 5 afrikai + 5 európai = 10 fix próba
+            customGenerator: () => shuffleArray([...stimuliData.afrikai, ...stimuliData.europai])
+        },
+        {
+            name: "3. Blokk: Európai+Virág vs. Afrikai+Bogár",
+            instruction: "<strong>3. Rész (Kombinált):</strong><br>Bal gomb (E): <b>Afrikai személy VAGY Bogár kép</b><br>Jobb gomb (I): <b>Európai személy VAGY Virág kép</b><br><br><i>Összesen 20 próba (minden kép 2-szer ismétlődik).</i>",
+            leftCat: "Afrikai / Bogár",
+            rightCat: "Európai / Virág",
+            mapping: { 'afrikai': 'e', 'rovar': 'e', 'europai': 'i', 'virag': 'i' },
+            // 10 kép duplikálva = 20 próba
+            customGenerator: () => shuffleArray([...stimuliData.afrikai, ...stimuliData.rovar, ...stimuliData.europai, ...stimuliData.virag, ...stimuliData.afrikai, ...stimuliData.rovar, ...stimuliData.europai, ...stimuliData.virag])
+        },
+        {
+            name: "4. Blokk: Afrikai+Virág vs. Európai+Bogár (Fordított)",
+            instruction: "<strong>4. Rész (Fordított kombinált):</strong><br>Bal gomb (E): <b>Európai személy VAGY Bogár kép</b><br>Jobb gomb (I): <b>Afrikai személy VAGY Virág kép</b><br><br><i>Összesen 20 próba (minden kép 2-szer ismétlődik).</i>",
+            leftCat: "Európai / Bogár",
+            rightCat: "Afrikai / Virág",
+            mapping: { 'europai': 'e', 'rovar': 'e', 'afrikai': 'i', 'virag': 'i' },
+            // 10 kép duplikálva = 20 próba
+            customGenerator: () => shuffleArray([...stimuliData.europai, ...stimuliData.rovar, ...stimuliData.afrikai, ...stimuliData.virag, ...stimuliData.europai, ...stimuliData.rovar, ...stimuliData.afrikai, ...stimuliData.virag])
+        }
+    ];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    const questionnaireSection = document.getElementById('questionnaire-section');
+    const demographicsForm = document.getElementById('demographics-form');
+    const iatInstructionsSection = document.getElementById('iat-instructions-section');
+    const instructionTitle = document.getElementById('instruction-title');
+    const instructionText = document.getElementById('instruction-text');
+    const startBlockBtn = document.getElementById('start-block-btn');
+    const iatTestSection = document.getElementById('iat-test-section');
+    const headerLeft = document.getElementById('header-left');
+    const headerRight = document.getElementById('header-right');
+    const stimulusDisplay = document.getElementById('stimulus-display');
+    const errorDisplay = document.getElementById('error-display');
+    const resultsSection = document.getElementById('results-section');
+    const resultsTableBody = document.getElementById('results-table-body');
+    const dScoreDisplay = document.getElementById('d-score-display');
+    const downloadCsvBtn = document.getElementById('download-csv-btn');
+
+    demographicsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        demographicsData = {
+            livingPlace: document.getElementById('living-place').value,
+            financial: document.querySelector('input[name="financial"]:checked').value,
+            education: document.querySelector('input[name="education"]:checked').value,
+            religion: document.getElementById('religion').value || "Nem megadott",
+            newsFreq: document.querySelector('input[name="news_freq"]:checked').value,
+            prejudiceScale: document.getElementById('prejudice-scale').value
+        };
+
+        questionnaireSection.classList.add('hidden');
+        showBlockInstructions();
+    });
+
+    function showBlockInstructions() {
+        if (currentBlockIndex >= blocks.length) {
+            showResults();
+            return;
+        }
+
+        const block = blocks[currentBlockIndex];
+        instructionTitle.innerText = block.name;
+        instructionText.innerHTML = block.instruction;
+        iatInstructionsSection.classList.remove('hidden');
+    }
+
+    startBlockBtn.addEventListener('click', () => {
+        iatInstructionsSection.classList.add('hidden');
+        startBlock();
+    });
+
+    function startBlock() {
+        const block = blocks[currentBlockIndex];
+        trialIndex = 0;
+        trialList = block.customGenerator();
+        
+        headerLeft.innerText = block.leftCat;
+        headerRight.innerText = block.rightCat;
+
+        iatTestSection.classList.remove('hidden');
+        nextTrial();
+    }
+
+    let currentTrialItem = null;
+    let isErrorState = false;
+
+    function nextTrial() {
+        if (trialIndex >= trialList.length) {
+            iatTestSection.classList.add('hidden');
+            currentBlockIndex++;
+            showBlockInstructions();
+            return;
+        }
+
+        currentTrialItem = trialList[trialIndex];
+        // Csak a kép jelenik meg, felirat nélkül
+        stimulusDisplay.innerHTML = `<img src="${currentTrialItem.url}" alt="${currentTrialItem.name}" crossorigin="anonymous">`;
+        errorDisplay.classList.add('hidden');
+        isErrorState = false;
+        attemptsCount = 0;
+        startTime = performance.now();
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (iatTestSection.classList.contains('hidden')) return;
+
+        const key = e.key.toLowerCase();
+        if (key !== 'e' && key !== 'i') return;
+
+        const block = blocks[currentBlockIndex];
+        const expectedKey = block.mapping[currentTrialItem.type];
+
+        attemptsCount++;
+        const reactionTime = performance.now() - startTime;
+
+        if (key === expectedKey) {
+            allTrialLogs.push({
+                block: currentBlockIndex + 1,
+                blockName: block.name,
+                trial: trialIndex + 1,
+                stimulusType: currentTrialItem.type,
+                stimulusName: currentTrialItem.name,
+                expectedKey: expectedKey,
+                pressedKey: key,
+                reactionTimeMs: Math.round(reactionTime),
+                error: isErrorState ? 1 : 0,
+                attempts: attemptsCount
+            });
+
+            trialIndex++;
+            nextTrial();
+        } else {
+            isErrorState = true;
+            errorDisplay.classList.remove('hidden');
+        }
+    });
+
+    function showResults() {
+        resultsSection.classList.remove('hidden');
+        resultsTableBody.innerHTML = '';
+
+        let blockStats = [];
+
+        for (let b = 1; b <= 4; b++) {
+            let bLogs = allTrialLogs.filter(log => log.block === b);
+            let validRt = bLogs.map(l => l.reactionTimeMs);
+            let avgRt = validRt.length > 0 ? Math.round(validRt.reduce((a, b) => a + b, 0) / validRt.length) : 0;
+            let errorsCount = bLogs.filter(l => l.error === 1).length;
+            let errorPercent = bLogs.length > 0 ? Math.round((errorsCount / bLogs.length) * 100) : 0;
+
+            blockStats.push({ block: b, avgRt, errorPercent });
+
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${blocks[b-1].name}</td>
+                <td>${avgRt} ms</td>
+                <td>${errorPercent}%</td>
+            `;
+            resultsTableBody.appendChild(row);
+        }
+
+        let b3 = blockStats.find(s => s.block === 3).avgRt;
+        let b4 = blockStats.find(s => s.block === 4).avgRt;
+        let allRtValues = allTrialLogs.map(l => l.reactionTimeMs);
+        let globalSd = standardDeviation(allRtValues);
+
+        let dScore = globalSd > 0 ? ((b4 - b3) / globalSd).toFixed(2) : "0.00";
+        dScoreDisplay.innerText = `D-Score: ${dScore} (3. blokk: ${b3}ms vs 4. blokk: ${b4}ms)`;
+    }
+
+    function standardDeviation(values) {
+        if (values.length === 0) return 0;
+        let mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+        let squareDiffs = values.map(val => Math.pow(val - mean, 2));
+        let avgSquareDiff = squareDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+        return Math.sqrt(avgSquareDiff);
+    }
+
+    downloadCsvBtn.addEventListener('click', () => {
+        let csvContent = "\uFEFF"; // UTF-8 BOM
+        
+        csvContent += "DEMOGRÁFIAI ADATOK\n";
+        csvContent += "Mező,Érték\n";
+        csvContent += `Hol élsz?,${demographicsData.livingPlace}\n`;
+        csvContent += `Család anyagi helyzete,${demographicsData.financial}\n`;
+        csvContent += `Szülök végzettsége,${demographicsData.education}\n`;
+        csvContent += `Vallás,${demographicsData.religion}\n`;
+        csvContent += `Hírfogyasztás,${demographicsData.newsFreq}\n`;
+        csvContent += `Előítéletesség skála (1-10),${demographicsData.prejudiceScale}\n\n`;
+
+        csvContent += "IAT TESZT RÉSZLETES ADATOK\n";
+        csvContent += "Blokk,Blokk Neve,Próba,Kategória Típus,Kép Neve,Várt Gomb,Leütött Gomb,Reakcióidő (ms),Hiba (0=Nem/1=Igen),Próbálkozások száma\n";
+
+        allTrialLogs.forEach(log => {
+            csvContent += `${log.block},"${log.blockName}",${log.trial},${log.stimulusType},"${log.stimulusName}",${log.expectedKey},${log.pressedKey},${log.reactionTimeMs},${log.error},${log.attempts}\n`;
+        });
+
+        let encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "iat_nagykepek_eredmenyek.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+</script>
+
+</body>
+</html>
